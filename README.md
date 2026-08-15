@@ -238,3 +238,11 @@ Start the development server:
 npm run dev
 The frontend will run on the Vite development URL, usually:
 http://localhost:5173
+
+
+
+
+## Project Status
+
+Course enrollment system completed with course management,
+student enrollment, course dropping, and seat management.
