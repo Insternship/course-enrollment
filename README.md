@@ -75,11 +75,11 @@ The seat is then decreased atomically:
 
 This prevents two students from successfully taking the same last seat and prevents seatsRemaining from becoming negative.
 
--- Price Handling
+## Price Handling
 
 The price at the time of enrollment is stored in the Enrollment document as enrolledPrice.
 
--- Technologies Used
+## Technologies Used
 
 Frontend         Backend
 
@@ -96,7 +96,7 @@ Git
 GitHub
 MongoDB Atlas
 
--- Project Structure
+## Project Structure
 
 course-enrollment/
 │
@@ -144,7 +144,7 @@ course-enrollment/
 ├── .gitignore
 └── README.md
 
--- API Endpoints
+## API Endpoints
 
 Course Endpoints
 
@@ -162,7 +162,7 @@ POST	 /api/enrollments	  Enroll a student
 GET	     /api/enrollments/:   studentName	Get student's courses
 DELETE	 /api/enrollments/:id Drop a course
 
--- Data Models
+## Data Models
 
 Course Model
 
@@ -189,7 +189,7 @@ Enrollment
 ├── createdAt
 └── updatedAt
 
--- Error Handling
+##- Error Handling
 
 The application handles errors such as:
 
@@ -204,7 +204,7 @@ Database errors
 The server returns appropriate HTTP status codes and error messages.
 The server should continue running even when an invalid request is sent.
 
--- How to Run the Project
+## How to Run the Project
 Prerequisites
 
 Make sure the following are installed:
@@ -213,7 +213,7 @@ MongoDB Atlas account
 Git
 Postman
 
--- Backend Setup
+## Backend Setup
 
 Open the terminal and go to the backend folder:
 cd backend
@@ -227,7 +227,7 @@ node server.js
 The backend will run on:
 http://localhost:5000
 
--- Frontend Setup
+## Frontend Setup
 
 Open another terminal.
 Go to the frontend folder:
