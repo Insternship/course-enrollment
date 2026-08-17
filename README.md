@@ -1,103 +1,149 @@
 # Course Enrollment System
 
 A MERN stack mini project for managing courses and student enrollments.
-Students can view available courses, check seat availability, enroll in courses, view their enrolled courses, and drop courses.
+
+Students can:
+
+* View available courses
+* Check seat availability
+* Enroll in courses
+* View their enrolled courses
+* Drop enrolled courses
+
+---
 
 ## Features
+
 ### Courses Page
 
-- View all available courses
-- View course title and description
-- View instructor
-- View course duration
-- View course price
-- View total seats
-- View remaining seats
-- Enroll in a course
-- Enroll button is disabled when the course is full
+* View all available courses
+* View course title and description
+* View instructor
+* View course duration
+* View course price
+* View total seats
+* View remaining seats
+* Enroll in a course
+* Enroll button is disabled when the course is full
 
 ### My Courses Page
 
-- View all courses enrolled by the student
-- View student name
-- View instructor
-- View duration
-- View enrolled price
-- Drop a course
-- Dropping a course makes the seat available again
+* View all courses enrolled by the student
+* View student name
+* View instructor
+* View course duration
+* View enrolled price
+* Drop a course
+* Dropping a course makes the seat available again
+
+---
 
 ## Backend Features
 
-- Full CRUD operations for courses
-- Create course
-- Get all courses
-- Get a single course
-- Update course
-- Delete course
-- Enroll students
-- Get student's enrolled courses
-- Drop courses
-- Input validation
-- Error handling
-- MongoDB database
-- Mongoose
-- REST API
-- Routes, Controllers, Services and Models folder structure
+* Full CRUD operations for courses
+* Create a course
+* Get all courses
+* Get a single course
+* Update a course
+* Delete a course
+* Enroll students
+* Get student's enrolled courses
+* Drop courses
+* Input validation
+* Error handling
+* MongoDB database
+* Mongoose
+* REST API
+* Controllers, Services, Routes and Models structure
+
+---
 
 ## Concurrency Handling
 
-The main challenge in this project is when two students try to enroll in the last available seat at the same time.
+One of the main challenges in this project is handling multiple students trying to enroll in the last available seat at the same time.
 
-For example:
+### Example
 
-text
+Suppose a course has only **1 seat remaining**:
+
+```text
 Course has 1 seat remaining
 
 Student A → Enroll
 Student B → Enroll
+```
 
-Only one student should get the last seat.
+Only one student should successfully get the last seat.
 
-This is handled using MongoDB's atomic findOneAndUpdate() operation.
+This is handled using MongoDB's atomic `findOneAndUpdate()` operation.
 
 The course is updated only when a seat is available:
 
+```javascript
 {
   _id: courseId,
   seatsRemaining: { $gt: 0 }
 }
+```
 
 The seat is then decreased atomically:
 
+```javascript
 {
   $inc: { seatsRemaining: -1 }
 }
+```
 
-This prevents two students from successfully taking the same last seat and prevents seatsRemaining from becoming negative.
+This ensures that:
+
+* Only one student can get the last available seat
+* `seatsRemaining` never becomes negative
+* Two simultaneous enrollment requests cannot take the same seat
+
+---
 
 ## Price Handling
 
-The price at the time of enrollment is stored in the Enrollment document as enrolledPrice.
+The price at the time of enrollment is stored in the `Enrollment` document as `enrolledPrice`.
+
+This means that if the course price changes later, the enrolled student's original price remains unchanged.
+
+---
 
 ## Technologies Used
 
-Frontend         Backend
+### Frontend
 
-React.js         Node.js
-Vite             Express.js
-Axios            MongoDB    
-CSS              Mongoose
-React Router
+| Technology   | Purpose                          |
+| ------------ | -------------------------------- |
+| React.js     | User interface                   |
+| Vite         | Frontend development environment |
+| Axios        | API requests                     |
+| React Router | Page navigation                  |
+| CSS          | Styling                          |
 
-Tools
-Visual Studio Code
-Postman
-Git
-GitHub
-MongoDB Atlas
+### Backend
+
+| Technology | Purpose         |
+| ---------- | --------------- |
+| Node.js    | Backend runtime |
+| Express.js | REST API        |
+| MongoDB    | Database        |
+| Mongoose   | MongoDB ODM     |
+
+### Tools
+
+* Visual Studio Code
+* Postman
+* Git
+* GitHub
+* MongoDB Atlas
+
+---
 
 ## Project Structure
 
+```text
 course-enrollment/
 │
 ├── backend/
@@ -121,6 +167,7 @@ course-enrollment/
 │   ├── .env
 │   ├── .gitignore
 │   ├── package.json
+│   ├── package-lock.json
 │   └── server.js
 │
 ├── frontend/
@@ -132,40 +179,83 @@ course-enrollment/
 │   │   │   └── MyCourses.jsx
 │   │   │
 │   │   ├── components/
-|   |   ├── Navbar.jsx 
+│   │   │   └── Navbar.jsx
 │   │   │
 │   │   ├── App.jsx
 │   │   ├── main.jsx
 │   │   └── CSS files
 │   │
 │   ├── package.json
+│   ├── package-lock.json
 │   └── vite.config.js
 │
 ├── .gitignore
 └── README.md
+```
+
+### Backend Folder Responsibilities
+
+**Controllers**
+
+Handle incoming requests and send responses to the client.
+
+* `courseController.js`
+* `enrollmentController.js`
+
+**Models**
+
+Define the MongoDB data structure using Mongoose.
+
+* `Course.js`
+* `Enrollment.js`
+
+**Routes**
+
+Define the API endpoints and connect them to controllers.
+
+* `courseRoutes.js`
+* `enrollmentRoutes.js`
+
+**Services**
+
+Contain the main business logic of the application.
+
+* `courseService.js`
+* `enrollmentService.js`
+
+**server.js**
+
+Initializes Express, middleware, routes and MongoDB connection.
+
+---
 
 ## API Endpoints
 
-Course Endpoints
+### Course Endpoints
 
-Method	 Endpoint	          Description
-POST  	 /api/courses	      Create a new course
-GET	     /api/courses	      Get all courses
-GET	     /api/courses/:id	  Get a single course
-PUT	     /api/courses/:id	  Update a course
-DELETE	 /api/courses/:id	  Delete a course
- 
-Enrollment Endpoints
+| Method | Endpoint           | Description         |
+| ------ | ------------------ | ------------------- |
+| POST   | `/api/courses`     | Create a new course |
+| GET    | `/api/courses`     | Get all courses     |
+| GET    | `/api/courses/:id` | Get a single course |
+| PUT    | `/api/courses/:id` | Update a course     |
+| DELETE | `/api/courses/:id` | Delete a course     |
 
-Method	 Endpoint	          Description
-POST	 /api/enrollments	  Enroll a student
-GET	     /api/enrollments/:   studentName	Get student's courses
-DELETE	 /api/enrollments/:id Drop a course
+### Enrollment Endpoints
+
+| Method | Endpoint                        | Description                    |
+| ------ | ------------------------------- | ------------------------------ |
+| POST   | `/api/enrollments`              | Enroll a student               |
+| GET    | `/api/enrollments/:studentName` | Get student's enrolled courses |
+| DELETE | `/api/enrollments/:id`          | Drop a course                  |
+
+---
 
 ## Data Models
 
-Course Model
+### Course Model
 
+```text
 Course
 │
 ├── title
@@ -176,10 +266,12 @@ Course
 ├── totalSeats
 ├── seatsRemaining
 ├── createdAt
-└── updatedAt 
+└── updatedAt
+```
 
-Enrollment Model 
+### Enrollment Model
 
+```text
 Enrollment
 │
 ├── studentName
@@ -188,61 +280,123 @@ Enrollment
 ├── enrolledAt
 ├── createdAt
 └── updatedAt
+```
 
-##- Error Handling
+---
+
+## Error Handling
 
 The application handles errors such as:
 
-Course not found
-Enrollment not found
-Student already enrolled
-No seats available
-Invalid input
-Invalid course ID
-Database errors
+* Course not found
+* Enrollment not found
+* Student already enrolled
+* No seats available
+* Invalid input
+* Invalid course ID
+* Database errors
 
 The server returns appropriate HTTP status codes and error messages.
-The server should continue running even when an invalid request is sent.
+
+The application also handles invalid requests without stopping the server.
+
+---
 
 ## How to Run the Project
-Prerequisites
+
+### Prerequisites
 
 Make sure the following are installed:
-Node.js
-MongoDB Atlas account
-Git
-Postman
 
-## Backend Setup
+* Node.js
+* MongoDB Atlas account
+* Git
+* Postman
 
-Open the terminal and go to the backend folder:
+---
+
+### Backend Setup
+
+Open the terminal and navigate to the backend folder:
+
+```bash
 cd backend
+```
+
 Install dependencies:
+
+```bash
 npm install
-Create a .env file inside the backend folder.
+```
+
+Create a `.env` file inside the `backend` folder:
+
+```env
 PORT=5000
 MONGO_URI=YOUR_MONGODB_CONNECTION_STRING
+```
+
 Start the backend server:
+
+```bash
 node server.js
+```
+
 The backend will run on:
+
+```text
 http://localhost:5000
+```
 
-## Frontend Setup
+---
 
-Open another terminal.
-Go to the frontend folder:
+### Frontend Setup
+
+Open another terminal and navigate to the frontend folder:
+
+```bash
 cd frontend
+```
+
 Install dependencies:
+
+```bash
 npm install
-Start the development server:
+```
+
+Start the frontend development server:
+
+```bash
 npm run dev
-The frontend will run on the Vite development URL, usually:
+```
+
+The frontend will usually run on:
+
+```text
 http://localhost:5173
+```
 
-
+---
 
 
 ## Project Status
 
-Course enrollment system completed with course management,
-student enrollment, course dropping, and seat management.
+The Course Enrollment System is completed with:
+
+* Course management
+* Course CRUD operations
+* Student enrollment
+* My Courses page
+* Course dropping
+* Seat availability management
+* Concurrency handling
+* Input validation
+* Error handling
+* REST API
+* MongoDB database integration
+
+---
+
+## Conclusion
+
+This project demonstrates a complete MERN stack application with a structured backend architecture, REST APIs, MongoDB integration, student enrollment functionality and concurrency-safe seat management.
