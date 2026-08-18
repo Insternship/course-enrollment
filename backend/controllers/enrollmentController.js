@@ -1,13 +1,15 @@
 const enrollmentService = require("../services/enrollmentService");
 
-const enrollStudent = async (req, res) => {
+const enrollStudent = async (req, res, next) => {
   try {
     const { studentName, courseId } = req.body;
 
     if (!studentName || !courseId) {
-      return res.status(400).json({
-        message: "Student name and course ID are required",
-      });
+      const error = new Error(
+        "Student name and course ID are required"
+      );
+      error.statusCode = 400;
+      throw error;
     }
 
     const enrollment = await enrollmentService.enrollStudent(
@@ -20,40 +22,22 @@ const enrollStudent = async (req, res) => {
       enrollment,
     });
   } catch (error) {
-    if (error.message === "Course not found or no seats available") {
-      return res.status(409).json({
-        message: error.message,
-      });
-    }
-
-    if (error.message === "Student already enrolled in this course") {
-      return res.status(409).json({
-        message: error.message,
-      });
-    }
-
-    res.status(500).json({
-      message: "Failed to enroll in course",
-      error: error.message,
-    });
+    next(error);
   }
 };
 
-const getAllEnrollments = async (req, res) => {
+const getAllEnrollments = async (req, res, next) => {
   try {
     const enrollments =
       await enrollmentService.getAllEnrollments();
 
     res.status(200).json(enrollments);
   } catch (error) {
-    res.status(500).json({
-      message: "Failed to fetch enrollments",
-      error: error.message,
-    });
+    next(error);
   }
 };
 
-const getStudentCourses = async (req, res) => {
+const getStudentCourses = async (req, res, next) => {
   try {
     const { studentName } = req.params;
 
@@ -62,14 +46,11 @@ const getStudentCourses = async (req, res) => {
 
     res.status(200).json(courses);
   } catch (error) {
-    res.status(500).json({
-      message: "Failed to fetch enrolled courses",
-      error: error.message,
-    });
+    next(error);
   }
 };
 
-const dropCourse = async (req, res) => {
+const dropCourse = async (req, res, next) => {
   try {
     const enrollment =
       await enrollmentService.dropCourse(req.params.id);
@@ -79,16 +60,7 @@ const dropCourse = async (req, res) => {
       enrollment,
     });
   } catch (error) {
-    if (error.message === "Enrollment not found") {
-      return res.status(404).json({
-        message: error.message,
-      });
-    }
-
-    res.status(500).json({
-      message: "Failed to drop course",
-      error: error.message,
-    });
+    next(error);
   }
 };
 
